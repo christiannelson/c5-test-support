@@ -44,7 +44,7 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:https://svn.carbonfive.com/public/carbonfive/test-support/trunk</connection>
+        <connection>scm:svn:https://c5-test-support.googlecode.com/svn/trunk/</connection>
     </scm>
 
     <repositories>
