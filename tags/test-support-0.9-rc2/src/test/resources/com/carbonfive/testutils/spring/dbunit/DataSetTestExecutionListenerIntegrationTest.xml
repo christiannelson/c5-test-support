@@ -1,0 +1,3 @@
+<dataset>
+    <data name="default" value="classpath:color.txt"/>
+</dataset>
