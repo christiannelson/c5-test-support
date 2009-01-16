@@ -50,7 +50,7 @@
     <repositories>
         <repository>
             <id>c5-public-repository</id>
-            <url>http://mvn.carbonfive.com/groups/public</url>
+            <url>http://mvn.carbonfive.com/public</url>
         </repository>
         <repository>
             <id>jboss-repository</id>
