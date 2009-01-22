@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.carbonfive</groupId>
         <artifactId>c5-parent</artifactId>
-        <version>5</version>
+        <version>6</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -108,13 +108,7 @@
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.4.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-nop</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>2.4.3</version>
             <optional>true</optional>
         </dependency>
 
