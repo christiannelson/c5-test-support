@@ -12,6 +12,7 @@ import org.dbunit.ext.h2.*;
 import org.dbunit.ext.hsqldb.*;
 import org.dbunit.ext.mssql.*;
 import org.dbunit.ext.mysql.*;
+import org.dbunit.ext.oracle.*;
 import org.dbunit.operation.*;
 import org.slf4j.*;
 import org.springframework.core.*;
@@ -228,6 +229,8 @@ public class DataSetTestExecutionListener extends AbstractTestExecutionListener
                     return new HsqldbDataTypeFactory();
                 case MYSQL:
                     return new MySqlDataTypeFactory();
+                case ORACLE:
+                    return new Oracle10DataTypeFactory();
                 case SQL_SERVER:
                     return new MsSqlDataTypeFactory();
             }
@@ -296,5 +299,4 @@ public class DataSetTestExecutionListener extends AbstractTestExecutionListener
             this.connectionTransactional = connectionTransactional;
         }
     }
-
 }
