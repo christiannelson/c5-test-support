@@ -10,7 +10,7 @@
     <groupId>com.carbonfive</groupId>
     <artifactId>test-support</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
     <name>Carbon Five Test Support</name>
     <url>http://www.carbonfive.com</url>
 
@@ -44,7 +44,7 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:https://c5-test-support.googlecode.com/svn/trunk/</connection>
+        <connection>scm:svn:https://c5-test-support.googlecode.com/svn/tags/test-support-0.9.1</connection>
     </scm>
 
     <repositories>
