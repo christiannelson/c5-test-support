@@ -1,0 +1,14 @@
+<dataset>
+    <book id="1"
+          isbn="0307387895"
+          title="The Road"
+          author="Cormac McCarthy"/>
+    <book id="2"
+          isbn="037541486X"
+          title="The Looming Tower; Al-Qaeda and the Road to 9/11"
+          author="Lawrence Wright"/>
+    <book id="3"
+          isbn="0385513976"
+          title="The Most Famous Man in America; The Biography of Henry Ward Beecher"
+          author="Debby Applegate"/>
+</dataset>
