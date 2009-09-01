@@ -1,7 +1,7 @@
 package com.carbonfive.testutils.spring.dbunit;
 
 import static org.hamcrest.core.Is.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.jdbc.core.simple.*;
