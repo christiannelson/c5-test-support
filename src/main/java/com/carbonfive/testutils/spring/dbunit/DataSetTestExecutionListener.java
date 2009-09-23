@@ -1,34 +1,35 @@
 package com.carbonfive.testutils.spring.dbunit;
 
-import com.carbonfive.db.jdbc.*;
-import static org.apache.commons.lang.StringUtils.*;
-import org.dbunit.*;
-import org.dbunit.database.*;
-import org.dbunit.dataset.*;
-import org.dbunit.dataset.datatype.*;
-import org.dbunit.dataset.xml.*;
-import org.dbunit.ext.db2.*;
-import org.dbunit.ext.h2.*;
-import org.dbunit.ext.hsqldb.*;
-import org.dbunit.ext.mssql.*;
-import org.dbunit.ext.mysql.*;
-import org.dbunit.ext.oracle.*;
-import org.dbunit.operation.*;
-import org.slf4j.*;
-import org.springframework.core.*;
-import org.springframework.core.annotation.*;
-import org.springframework.core.io.*;
-import org.springframework.jdbc.datasource.*;
-import org.springframework.test.context.*;
-import org.springframework.test.context.support.*;
-import static org.springframework.util.ClassUtils.*;
+import com.carbonfive.testutils.dbunit.DBUnitUtils;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import org.dbunit.DefaultDatabaseTester;
+import org.dbunit.IDatabaseTester;
+import org.dbunit.database.DatabaseConfig;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.Constants;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
+import static org.springframework.util.ClassUtils.getPackageName;
+import static org.springframework.util.ClassUtils.getQualifiedName;
 
-import javax.sql.*;
-import static java.lang.String.*;
-import java.lang.annotation.*;
-import java.lang.reflect.*;
-import java.sql.*;
-import java.util.*;
+import javax.sql.DataSource;
+import static java.lang.String.format;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * Spring test framework TestExecutionListener which looks for the DataSet annotation and if found, attempts to load a data set (test fixture) before the test
@@ -197,7 +198,7 @@ public class DataSetTestExecutionListener extends AbstractTestExecutionListener
             }
         });
 
-        tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, determineDataTypeFactory(connection));
+        tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, DBUnitUtils.determineDataTypeFactory(connection));
         configureDatabaseConfig(tester.getConnection().getConfig());
 
         configuration.setDatabaseTester(tester);
@@ -212,33 +213,6 @@ public class DataSetTestExecutionListener extends AbstractTestExecutionListener
     {
         Annotation annotation = AnnotationUtils.findAnnotation(method, annotationType);
         return annotation == null ? AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationType) : annotation;
-    }
-
-    IDataTypeFactory determineDataTypeFactory(Connection connection)
-    {
-        try
-        {
-            DatabaseType databaseType = DatabaseUtils.databaseType(connection.getMetaData().getURL());
-            switch (databaseType)
-            {
-                case DB2:
-                    return new Db2DataTypeFactory();
-                case H2:
-                    return new H2DataTypeFactory();
-                case HSQL:
-                    return new HsqldbDataTypeFactory();
-                case MYSQL:
-                    return new MySqlDataTypeFactory();
-                case ORACLE:
-                    return new Oracle10DataTypeFactory();
-                case SQL_SERVER:
-                    return new MsSqlDataTypeFactory();
-            }
-        }
-        catch (SQLException ignored)
-        {
-        }
-        return new DefaultDataTypeFactory();
     }
 
     static class DatasetConfiguration
