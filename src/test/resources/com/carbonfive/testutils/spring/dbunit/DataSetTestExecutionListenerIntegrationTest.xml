@@ -1,3 +1,0 @@
-<dataset>
-    <data name="default" value="classpath:com/carbonfive/testutils/spring/dbunit/color.txt"/>
-</dataset>
