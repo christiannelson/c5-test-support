@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
+import java.util.Properties;
 
 public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 {
@@ -42,7 +43,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                 {
                     String className = FunctionalTestProperties.get().getProperty("fixture.loader.classname", DEFAULT_DATABASE_FIXTURE_LOADER);
 
-                    fixtureLoader = (DatabaseFixtureLoader) BeanUtils.instantiateClass(Class.forName(className));;
+                    fixtureLoader = (DatabaseFixtureLoader) BeanUtils.instantiateClass(Class.forName(className));
                     fixtureLoader.initialize(FunctionalTestProperties.get());
                 }
                 catch (ClassNotFoundException e)
@@ -53,9 +54,16 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
                 try
                 {
-                    String className = FunctionalTestProperties.get().getProperty("appserver.manager.classname", DEFAULT_APPLICATION_SERVER_MANAGER);
-                    
-                    serverManager = (ApplicationServerManager) BeanUtils.instantiateClass(Class.forName(className));
+                    if (System.getProperty("useExternalApplication") != null) // TODO Better name for this?
+                    {
+                        serverManager = new NoopApplicationServerManager();
+                    }
+                    else
+                    {
+                        String className = FunctionalTestProperties.get().getProperty("appserver.manager.classname", DEFAULT_APPLICATION_SERVER_MANAGER);
+                        serverManager = (ApplicationServerManager) BeanUtils.instantiateClass(Class.forName(className));
+                    }
+
                     serverManager.initialize(FunctionalTestProperties.get());
                 }
                 catch (Exception e)
@@ -193,7 +201,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                     serverManager.start();
                 }
             }
-            
+
             junitBefores.evaluate();
         }
     }
@@ -219,6 +227,26 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                 logger.info("Test dirties the database, marking the database dirty.");
                 databaseDirty = true;
             }
+        }
+    }
+
+    private class NoopApplicationServerManager implements ApplicationServerManager
+    {
+        public void initialize(Properties properties)
+        {
+        }
+
+        public boolean isRunning()
+        {
+            return true;
+        }
+
+        public void start()
+        {
+        }
+
+        public void stop()
+        {
         }
     }
 }
