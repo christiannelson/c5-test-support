@@ -25,6 +25,9 @@ public class FunctionalTestProperties
         InputStream is = resource.getInputStream();
         properties.load(is);
         IOUtils.closeQuietly(is);
+
+        // Process overrides and placeholders.
+        new PropertiesOverrideProcessor(properties).process();
     }
 
     public static Properties get()
@@ -35,4 +38,5 @@ public class FunctionalTestProperties
         }
         return properties;
     }
+
 }
