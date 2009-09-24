@@ -9,6 +9,7 @@ import org.codehaus.cargo.container.installer.Installer;
 import org.codehaus.cargo.container.installer.ZipURLInstaller;
 import org.codehaus.cargo.generic.DefaultContainerFactory;
 import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
+import org.codehaus.cargo.util.log.SimpleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +57,15 @@ public class CargoApplicationServerManager implements ApplicationServerManager
         configuration.setProperty("cargo.servlet.port", appserverPort);
 
         container = (InstalledLocalContainer) new DefaultContainerFactory().createContainer(appserverContainer, ContainerType.INSTALLED, configuration);
-        //container.setOutput("target/output.log");
-        //container.setLogger(new SimpleLogger());
+
+        if (Boolean.valueOf(properties.getProperty("appserver.logging", "false")))
+        {
+            container.setLogger(new SimpleLogger());
+        }
+
         container.setHome(installer.getHome());
 
-        Map props = new HashMap(properties.size());
+        Map<Object, Object> props = new HashMap<Object, Object>(properties.size());
         for (Object key : properties.keySet())
         {
             props.put(key, properties.get(key));

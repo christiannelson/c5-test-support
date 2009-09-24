@@ -35,11 +35,27 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
                 FunctionalTestProperties.load(propertiesLocation);
 
-                fixtureLoader = new DBUnitDatabaseFixtureLoader();
-                fixtureLoader.initialize(FunctionalTestProperties.get());
+                try
+                {
+                    fixtureLoader = new DBUnitDatabaseFixtureLoader();
+                    fixtureLoader.initialize(FunctionalTestProperties.get());
+                }
+                catch (ClassNotFoundException e)
+                {
+                    logger.error("Failed to initialize the database fixture loader.", e);
+                    throw e;
+                }
 
-                serverManager = new CargoApplicationServerManager();
-                serverManager.initialize(FunctionalTestProperties.get());
+                try
+                {
+                    serverManager = new CargoApplicationServerManager();
+                    serverManager.initialize(FunctionalTestProperties.get());
+                }
+                catch (Exception e)
+                {
+                    logger.error("Failed to initialize the application server manager.", e);
+                    throw e;
+                }
 
                 initialized = true;
             }
@@ -169,9 +185,9 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                     logger.info("Starting application server.");
                     serverManager.start();
                 }
-
-                junitBefores.evaluate();
             }
+            
+            junitBefores.evaluate();
         }
     }
 
