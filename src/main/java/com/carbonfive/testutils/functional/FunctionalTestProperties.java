@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+// TODO Don't really like this class; is there a better way to make these available (dep inject)?
 public class FunctionalTestProperties
 {
     private static Properties properties;
