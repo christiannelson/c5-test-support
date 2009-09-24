@@ -5,16 +5,19 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
 
 public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 {
+    public static final String DEFAULT_DATABASE_FIXTURE_LOADER = "com.carbonfive.test.functional.DBUnitDatabaseFixtureLoader";
+    public static final String DEFAULT_APPLICATION_SERVER_MANAGER = "com.carbonfive.test.functional.CargoApplicationServerManager";
+
     private static Logger logger = LoggerFactory.getLogger(FunctionalTestRunner.class);
 
     private static boolean initialized = false;
     private static boolean databaseDirty = true;
-
     private static DatabaseFixtureLoader fixtureLoader;
     private static ApplicationServerManager serverManager;
 
@@ -37,7 +40,9 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
                 try
                 {
-                    fixtureLoader = new DBUnitDatabaseFixtureLoader();
+                    String className = FunctionalTestProperties.get().getProperty("fixture.loader.classname", DEFAULT_DATABASE_FIXTURE_LOADER);
+
+                    fixtureLoader = (DatabaseFixtureLoader) BeanUtils.instantiateClass(Class.forName(className));;
                     fixtureLoader.initialize(FunctionalTestProperties.get());
                 }
                 catch (ClassNotFoundException e)
@@ -48,7 +53,9 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
                 try
                 {
-                    serverManager = new CargoApplicationServerManager();
+                    String className = FunctionalTestProperties.get().getProperty("appserver.manager.classname", DEFAULT_APPLICATION_SERVER_MANAGER);
+                    
+                    serverManager = (ApplicationServerManager) BeanUtils.instantiateClass(Class.forName(className));
                     serverManager.initialize(FunctionalTestProperties.get());
                 }
                 catch (Exception e)
