@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 @Documented
-
 public @interface FunctionalTestConfiguration
 {
     String value();
