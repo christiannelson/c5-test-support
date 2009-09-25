@@ -31,7 +31,6 @@ public class CargoApplicationServerManager implements ApplicationServerManager
     public void initialize(Properties properties)
     {
         this.properties = properties;
-        // TODO Allow developer to run tests against an already running app server (sys property).
 
         final String appserverInstaller = FunctionalTestProperties.get().getProperty("appserver.installer");
 
