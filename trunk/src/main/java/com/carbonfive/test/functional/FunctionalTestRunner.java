@@ -17,8 +17,10 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
     private static Logger logger = LoggerFactory.getLogger(FunctionalTestRunner.class);
 
+    private static boolean configured = false;
     private static boolean initialized = false;
     private static boolean databaseDirty = true;
+
     private static DatabaseFixtureLoader fixtureLoader;
     private static ApplicationServerManager serverManager;
 
@@ -28,7 +30,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 
         synchronized (FunctionalTestRunner.class)
         {
-            if (!initialized)
+            if (!configured)
             {
                 String propertiesLocation = "classpath:/functional-tests.properties";
 
@@ -72,7 +74,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                     throw e;
                 }
 
-                initialized = true;
+                configured = true;
             }
         }
     }
@@ -128,8 +130,10 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
         @Override
         public void evaluate() throws Throwable
         {
-            if (!serverManager.isRunning())
+            if (!initialized)
             {
+                initialized = true;
+                
                 loadDatabaseFixture(testClass, null);
 
                 serverManager.start();
@@ -234,11 +238,6 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
     {
         public void initialize(Properties properties)
         {
-        }
-
-        public boolean isRunning()
-        {
-            return true;
         }
 
         public void start()

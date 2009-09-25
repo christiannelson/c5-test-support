@@ -6,8 +6,6 @@ public interface ApplicationServerManager
 {
     void initialize(Properties properties);
 
-    boolean isRunning();
-
     void start();
     
     void stop();

@@ -26,7 +26,6 @@ public class CargoApplicationServerManager implements ApplicationServerManager
 
     private Properties properties;
 
-    private static boolean running = false;
     private static InstalledLocalContainer container = null;
 
     public void initialize(Properties properties)
@@ -96,11 +95,6 @@ public class CargoApplicationServerManager implements ApplicationServerManager
         });
     }
 
-    public boolean isRunning()
-    {
-        return running;
-    }
-
     public void start()
     {
         final String appserverContainer = properties.getProperty("appserver.container");
@@ -110,14 +104,10 @@ public class CargoApplicationServerManager implements ApplicationServerManager
 
         // (4) Start the container
         container.start();
-
-        running = true;
     }
 
     public void stop()
     {
         container.stop();
-
-        running = false;
     }
 }
