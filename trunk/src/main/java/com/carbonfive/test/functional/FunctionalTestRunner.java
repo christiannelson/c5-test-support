@@ -1,5 +1,8 @@
 package com.carbonfive.test.functional;
 
+import static org.fest.reflect.core.Reflection.field;
+import static org.fest.reflect.core.Reflection.staticField;
+import org.fest.reflect.exception.ReflectionError;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -14,6 +17,8 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
 {
     public static final String DEFAULT_DATABASE_FIXTURE_LOADER = "com.carbonfive.test.functional.DBUnitDatabaseFixtureLoader";
     public static final String DEFAULT_APPLICATION_SERVER_MANAGER = "com.carbonfive.test.functional.CargoApplicationServerManager";
+
+    private static final String PROPERTIES_FIELD_NAME = "properties";
 
     private static Logger logger = LoggerFactory.getLogger(FunctionalTestRunner.class);
 
@@ -97,7 +102,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
     protected Statement withBefores(FrameworkMethod frameworkMethod, Object testInstance, Statement statement)
     {
         Statement junitBefores = super.withBefores(frameworkMethod, testInstance, statement);
-        return new RunBeforeTestMethodCallbacks(junitBefores, getTestClass().getJavaClass(), frameworkMethod.getMethod());
+        return new RunBeforeTestMethodCallbacks(junitBefores, testInstance, getTestClass().getJavaClass(), frameworkMethod.getMethod());
     }
 
     @Override
@@ -130,6 +135,15 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
         @Override
         public void evaluate() throws Throwable
         {
+            try
+            {
+                staticField(PROPERTIES_FIELD_NAME).ofType(Properties.class).in(testClass).set(FunctionalTestProperties.get());
+            }
+            catch (ReflectionError ignored)
+            {
+            }
+
+
             if (!initialized)
             {
                 initialized = true;
@@ -170,12 +184,14 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
     private class RunBeforeTestMethodCallbacks extends Statement
     {
         private Statement junitBefores;
+        private Object testInstance;
         private Class<?> testClass;
         private Method testMethod;
 
-        public RunBeforeTestMethodCallbacks(Statement junitBefores, Class<?> testClass, Method testMethod)
+        public RunBeforeTestMethodCallbacks(Statement junitBefores, Object testInstance, Class<?> testClass, Method testMethod)
         {
             this.junitBefores = junitBefores;
+            this.testInstance = testInstance;
             this.testClass = testClass;
             this.testMethod = testMethod;
         }
@@ -183,6 +199,14 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
         @Override
         public void evaluate() throws Throwable
         {
+            try
+            {
+                field(PROPERTIES_FIELD_NAME).ofType(Properties.class).in(testInstance).set(FunctionalTestProperties.get());
+            }
+            catch (ReflectionError ignored)
+            {
+            }
+
             if (databaseDirty)
             {
                 final boolean restartApplication = Boolean.parseBoolean(FunctionalTestProperties.get().getProperty("fixture.restart_application", "false"));
