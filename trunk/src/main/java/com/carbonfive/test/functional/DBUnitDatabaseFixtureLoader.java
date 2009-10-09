@@ -3,9 +3,9 @@ package com.carbonfive.test.functional;
 import com.carbonfive.test.dbunit.DBUnitUtils;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import org.dbunit.DefaultDatabaseTester;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
@@ -72,11 +72,9 @@ public class DBUnitDatabaseFixtureLoader implements DatabaseFixtureLoader
                     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(fixture.getInputStream()));
                     dataSet.addReplacementObject("[NULL]", null);
 
-                    DefaultDatabaseTester tester = new DefaultDatabaseTester(new DatabaseConnection(connection));
-                    tester.getConnection().getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, DBUnitUtils.determineDataTypeFactory(connection));
-                    tester.setDataSet(dataSet);
-                    tester.setSetUpOperation(DatabaseOperation.CLEAN_INSERT);
-                    tester.onSetup();
+                    IDatabaseConnection cxn = new DatabaseConnection(connection);
+                    cxn.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, DBUnitUtils.determineDataTypeFactory(connection));
+                    DatabaseOperation.CLEAN_INSERT.execute(cxn, dataSet);
                 }
                 catch (Exception e)
                 {
