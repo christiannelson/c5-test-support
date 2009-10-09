@@ -63,6 +63,7 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
                 {
                     if (System.getProperty("useExternalApplication") != null) // TODO Better name for this?
                     {
+                        logger.info("Using an already running application server - no-op application server manager configured.");
                         serverManager = new NoopApplicationServerManager();
                     }
                     else
@@ -142,7 +143,6 @@ public class FunctionalTestRunner extends BlockJUnit4ClassRunner
             catch (ReflectionError ignored)
             {
             }
-
 
             if (!initialized)
             {
