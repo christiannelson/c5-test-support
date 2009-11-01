@@ -45,6 +45,7 @@
         <java.target>1.5</java.target>
 
         <c5.db.version>0.9.8</c5.db.version>
+        <cargo.version>1.0</cargo.version>
     </properties>
 
     <scm>
@@ -101,7 +102,7 @@
         <dependency>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-core-container-tomcat</artifactId>
-            <version>1.0</version>
+            <version>${cargo.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -143,7 +144,7 @@
         <dependency>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-core-api-generic</artifactId>
-            <version>1.0</version>
+            <version>${cargo.version}</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>

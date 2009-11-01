@@ -13,12 +13,15 @@ import org.codehaus.cargo.util.log.SimpleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class CargoApplicationServerManager implements ApplicationServerManager
 {
@@ -32,19 +35,34 @@ public class CargoApplicationServerManager implements ApplicationServerManager
     {
         this.properties = properties;
 
-        final String appserverInstaller = FunctionalTestProperties.get().getProperty("appserver.installer");
+        String appserverInstaller = FunctionalTestProperties.get().getProperty("appserver.installer");
+        String appserverHome = FunctionalTestProperties.get().getProperty("appserver.home");
 
-        // (1) Optional step to install the container from a URL pointing to its distribution
-        Installer installer = null;
-        try
+        if (isBlank(appserverInstaller) && isBlank(appserverHome))
         {
-            installer = new ZipURLInstaller(new URL(appserverInstaller));
+            logger.error("One of 'appserver.installer' or 'appserver.home' must be set.");
+            return;
         }
-        catch (MalformedURLException e)
+
+        if (isNotBlank(appserverInstaller))
         {
-            throw new RuntimeException(e);
+            logger.info(format("Installing application server from %s.", appserverInstaller));
+            Installer installer;
+            try
+            {
+                installer = new ZipURLInstaller(new URL(appserverInstaller));
+            }
+            catch (MalformedURLException e)
+            {
+                throw new RuntimeException(e);
+            }
+            installer.install();
+            appserverHome = installer.getHome();
         }
-        installer.install();
+        else
+        {
+            logger.info(format("Using installed application server from %s.", appserverHome));
+        }
 
         final String appserverContainer = FunctionalTestProperties.get().getProperty("appserver.container");
         final String appserverPort = properties.getProperty("appserver.port", "8080");
@@ -61,7 +79,7 @@ public class CargoApplicationServerManager implements ApplicationServerManager
             container.setLogger(new SimpleLogger());
         }
 
-        container.setHome(installer.getHome());
+        container.setHome(appserverHome);
 
         Map<Object, Object> props = new HashMap<Object, Object>(properties.size());
         for (Object key : properties.keySet())
