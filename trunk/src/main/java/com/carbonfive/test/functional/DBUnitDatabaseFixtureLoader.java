@@ -1,13 +1,11 @@
 package com.carbonfive.test.functional;
 
 import com.carbonfive.test.dbunit.DBUnitUtils;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +23,9 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public class DBUnitDatabaseFixtureLoader implements DatabaseFixtureLoader
 {
@@ -51,7 +52,10 @@ public class DBUnitDatabaseFixtureLoader implements DatabaseFixtureLoader
 
     public void load(Class<?> testClass, Method testMethod) throws DatabaseFixtureException
     {
-        if (dataSource == null || isBlank(properties.getProperty("fixture.file"))) { return; }
+        if (dataSource == null || isBlank(properties.getProperty("fixture.file")))
+        {
+            return;
+        }
 
         logger.info("Loading database fixture data.");
 
@@ -63,13 +67,13 @@ public class DBUnitDatabaseFixtureLoader implements DatabaseFixtureLoader
         //    return;
         //}
 
-        new JdbcTemplate(dataSource).execute(new ConnectionCallback()
+        new JdbcTemplate(dataSource).execute(new ConnectionCallback<Object>()
         {
             public Object doInConnection(Connection connection) throws SQLException, DataAccessException
             {
                 try
                 {
-                    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(fixture.getInputStream()));
+                    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(fixture.getInputStream()));
                     dataSet.addReplacementObject("[NULL]", null);
 
                     IDatabaseConnection cxn = new DatabaseConnection(connection);

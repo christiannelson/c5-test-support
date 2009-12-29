@@ -10,6 +10,7 @@ import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.ext.mssql.MsSqlDataTypeFactory;
 import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.oracle.Oracle10DataTypeFactory;
+import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,6 +34,8 @@ public class DBUnitUtils
                     return new MySqlDataTypeFactory();
                 case ORACLE:
                     return new Oracle10DataTypeFactory();
+                case POSTGRESQL:
+                    return new PostgresqlDataTypeFactory();
                 case SQL_SERVER:
                     return new MsSqlDataTypeFactory();
             }

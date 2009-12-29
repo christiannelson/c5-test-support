@@ -4,6 +4,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 
 import java.net.URL;
@@ -40,7 +41,7 @@ public class DBUnitFixture implements Fixture
         try
         {
             URL dataUrl = getClass().getResource(location);
-            return new FlatXmlDataSet(dataUrl);
+            return new FlatXmlDataSetBuilder().build(dataUrl);
         }
         catch (Exception e)
         {

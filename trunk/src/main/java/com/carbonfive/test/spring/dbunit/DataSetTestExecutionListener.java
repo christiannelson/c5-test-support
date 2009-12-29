@@ -9,6 +9,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ import static org.springframework.util.ClassUtils.getQualifiedName;
 
 import javax.sql.DataSource;
 import static java.lang.String.format;
+
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -185,8 +188,9 @@ public class DataSetTestExecutionListener extends AbstractTestExecutionListener
             log.info(format("Loading dataset from location '%s' using operation '%s'.", configuration.getLocation(), configuration.getSetupOperation()));
         }
 
-        ReplacementDataSet dataSet =
-                new ReplacementDataSet(new FlatXmlDataSet(new DefaultResourceLoader().getResource(configuration.getLocation()).getInputStream()));
+
+        InputStream is = new DefaultResourceLoader().getResource(configuration.getLocation()).getInputStream();
+        ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(is));
         dataSet.addReplacementObject("[NULL]", null);
         configureReplacementDataSet(dataSet);
 
